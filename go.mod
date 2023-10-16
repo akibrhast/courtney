@@ -1,11 +1,16 @@
-module github.com/dave/courtney
+module github.com/akibrhast/courtney
 
-go 1.12
+go 1.21.3
 
 require (
-	github.com/dave/astrid v0.0.0-20170323122508-8c2895878b14
-	github.com/dave/brenda v1.1.0
-	github.com/dave/patsy v0.0.0-20210517141501-957256f50cba
+	github.com/akibrhast/astrid v0.1.1
+	github.com/akibrhast/brenda v0.1.1
+	github.com/akibrhast/patsy v0.1.0
 	github.com/pkg/errors v0.9.1
-	golang.org/x/tools v0.7.1-0.20230321231433-255eeebbce77
+	golang.org/x/tools v0.14.0
+)
+
+require (
+	golang.org/x/mod v0.13.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 )
