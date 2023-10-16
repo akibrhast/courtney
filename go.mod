@@ -1,6 +1,6 @@
 module github.com/akibrhast/courtney
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/akibrhast/astrid v0.1.1
