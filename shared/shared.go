@@ -3,8 +3,8 @@ package shared
 import (
 	"strings"
 
-	"github.com/akibrhast/patsy"
-	"github.com/akibrhast/patsy/vos"
+	"github.com/akibrhast/courtney/patsy"
+	"github.com/akibrhast/courtney/patsy/vos"
 )
 
 // Setup holds globals, environment and command line flags for the courtney

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
+
 	"path"
 	"path/filepath"
 	"reflect"
@@ -12,11 +14,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/akibrhast/courtney/patsy"
+	"github.com/akibrhast/courtney/patsy/builder"
+	"github.com/akibrhast/courtney/patsy/vos"
 	"github.com/akibrhast/courtney/shared"
 	"github.com/akibrhast/courtney/tester"
-	"github.com/akibrhast/patsy"
-	"github.com/akibrhast/patsy/builder"
-	"github.com/akibrhast/patsy/vos"
 	"golang.org/x/tools/cover"
 )
 
@@ -141,10 +143,8 @@ func TestTester_Enforce(t *testing.T) {
 
 func TestTester_Save_output(t *testing.T) {
 	env := vos.Mock()
-	dir, err := ioutil.TempDir("", "")
-	if err != nil {
-		t.Fatalf("Error creating temp dir: %s", err)
-	}
+	dir := os.TempDir()
+
 	out := filepath.Join(dir, "foo.bar")
 	setup := &shared.Setup{
 		Env:    env,

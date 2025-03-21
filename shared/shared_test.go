@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/akibrhast/courtney/patsy"
+	"github.com/akibrhast/courtney/patsy/builder"
+	"github.com/akibrhast/courtney/patsy/vos"
 	"github.com/akibrhast/courtney/shared"
-	"github.com/akibrhast/patsy"
-	"github.com/akibrhast/patsy/builder"
-	"github.com/akibrhast/patsy/vos"
 )
 
 func TestParseArgs(t *testing.T) {
