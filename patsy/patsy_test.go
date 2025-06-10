@@ -2,6 +2,7 @@ package patsy_test
 
 import (
 	"fmt"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -241,6 +242,36 @@ func TestDir(t *testing.T) {
 				t.Fatalf("Got %s, expected %s", calculatedDir, packageDir)
 			}
 		})
+	}
+}
+
+// FailingEnv is a custom environment that simulates failure.
+type FailingEnv struct {
+	vos.Env // embed the standard environment for other methods
+}
+
+// Override a method that patsy.Dirs would call. For example, if it uses ReadDir:
+func (fe *FailingEnv) ReadDir(dir string) ([]os.FileInfo, error) {
+	return nil, fmt.Errorf("intentional failure from ReadDir")
+}
+
+func TestDirsError_FailingEnv(t *testing.T) {
+	// Create an instance of the failing environment
+	env := &FailingEnv{Env: vos.Mock()}
+	// Call patsy.Dirs; the overridden ReadDir should trigger an error.
+	dirs, err := patsy.Dirs(env, "any/path")
+	if err == nil {
+		t.Fatalf("expected error from failing environment, got dirs: %v", dirs)
+	}
+}
+
+func TestDirsError_InvalidPath(t *testing.T) {
+	env := vos.Mock()
+	// Assumption: a non-existent package path should cause patsy.Dirs to return an error.
+	invalidPath := "non/existent/path"
+	dirs, err := patsy.Dirs(env, invalidPath)
+	if err == nil {
+		t.Fatalf("expected error for non-existent path, got dirs: %v", dirs)
 	}
 }
 

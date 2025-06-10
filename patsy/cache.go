@@ -1,6 +1,7 @@
 package patsy
 
 import (
+	"fmt"
 	"path"
 	"path/filepath"
 	"strings"
@@ -153,7 +154,11 @@ func (c *Cache) getDir(key string) (string, bool) {
 func (c *Cache) getDirs(key string) (map[string]string, bool) {
 	c.dirsm.RLock()
 	defer c.dirsm.RUnlock()
-	wd, _ := c.env.Getwd()
+	wd, err := c.env.Getwd()
+	if err != nil {
+		fmt.Printf("error getting working directory: %v", err)
+		return nil, false
+	}
 	v, ok := c.dirsCache[keyWithDir{dir: wd, key: key}]
 	return v, ok
 }
@@ -161,7 +166,11 @@ func (c *Cache) getDirs(key string) (map[string]string, bool) {
 func (c *Cache) getPath(key string) (string, bool) {
 	c.pathm.RLock()
 	defer c.pathm.RUnlock()
-	wd, _ := c.env.Getwd()
+	wd, err := c.env.Getwd()
+	if err != nil {
+		fmt.Printf("error getting working directory: %v", err)
+		return "", false
+	}
 	v, ok := c.pathCache[keyWithDir{dir: wd, key: key}]
 	return v, ok
 }
