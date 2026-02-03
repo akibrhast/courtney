@@ -99,6 +99,17 @@ func (c *CodeMap) LoadProgram() error {
 		return errors.Wrap(err, "Error loading config")
 	}
 	c.pkgs = pkgs
+
+	// Populate PackageImports with direct imports for each package
+	c.setup.PackageImports = make(map[string]map[string]bool)
+	for _, pkg := range pkgs {
+		imports := make(map[string]bool)
+		for importPath := range pkg.Imports {
+			imports[importPath] = true
+		}
+		c.setup.PackageImports[pkg.PkgPath] = imports
+	}
+
 	return nil
 }
 
