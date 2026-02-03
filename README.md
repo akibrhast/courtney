@@ -1,14 +1,22 @@
-[![Build Status](https://travis-ci.org/dave/courtney.svg?branch=master)](https://travis-ci.org/dave/courtney) [![Go Report Card](https://goreportcard.com/badge/github.com/dave/courtney)](https://goreportcard.com/report/github.com/dave/courtney) [![codecov](https://codecov.io/gh/dave/courtney/branch/master/graph/badge.svg)](https://codecov.io/gh/dave/courtney)
-
 # Courtney
 
-Courtney makes your code coverage more meaningful, by excluding some of the 
+Courtney makes your code coverage more meaningful, by excluding some of the
 less important parts.
 
-1. Packages are tested with coverage.  
-2. Coverage files are merged.  
-3. Some code is less important to test. This is excluded from the coverage file.      
+1. Packages are tested with coverage.
+2. Coverage files are merged.
+3. Some code is less important to test. This is excluded from the coverage file.
 4. Optionally we enforce that all remaining code is covered.
+
+## Recent Improvements
+
+This fork includes an enhancement that filters the `-coverpkg` flag to only include relevant package dependencies. This eliminates spurious Go warnings like:
+
+```
+warning: no packages being tested depend on matches for pattern nrl/ipower/internal/cloudb
+```
+
+When testing a package, only the package itself and its actual dependencies (direct or transitive) are included in coverage analysis, resulting in cleaner output and more meaningful coverage reports.
 
 # Excludes 
 What do we exclude from the coverage report?
@@ -61,8 +69,17 @@ that the other result parameters are zero values.
   cases.  
 
 # Install
+
+**From the improved fork (with filtered -coverpkg):**
 ```
-go get -u github.com/dave/courtney 
+go install github.com/akibrhast/courtney@latest
+```
+
+Or clone and build locally:
+```
+git clone https://github.com/akibrhast/courtney.git
+cd courtney
+go install .
 ```
 
 # Usage
@@ -80,9 +97,9 @@ To test just the current package:
 courtney .
 ```
 
-To test the `a` package, it's sub-packages and the `b` package: 
+To test the `a` package, it's sub-packages and the `b` package:
 ```
-courtney github.com/dave/a/... github.com/dave/b
+courtney github.com/akibrhast/a/... github.com/akibrhast/b
 ```
 
 # Options
@@ -131,7 +148,7 @@ notificaitons:
     recipients: <your-email>
     on_failure: always
 install:
-  - go get -u github.com/dave/courtney
+  - go get -u github.com/akibrhast/courtney
   - go get -t -v ./...
 script:
   - courtney
@@ -151,7 +168,7 @@ notificaitons:
     on_failure: always
 install:
   - go get -u github.com/mattn/goveralls
-  - go get -u github.com/dave/courtney
+  - go get -u github.com/akibrhast/courtney
   - go get -t -v ./...
 script:
   - courtney
