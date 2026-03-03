@@ -25,6 +25,33 @@ func New(setup *shared.Setup) *Tester {
 	return t
 }
 
+// getTransitiveDeps returns a set of all transitive dependencies (direct and indirect)
+// for the given package path, using the PackageImports map from setup.
+func (t *Tester) getTransitiveDeps(pkgPath string) map[string]bool {
+	deps := make(map[string]bool)
+	visited := make(map[string]bool)
+
+	var visit func(path string)
+	visit = func(path string) {
+		if visited[path] {
+			return
+		}
+		visited[path] = true
+
+		imports, ok := t.setup.PackageImports[path]
+		if !ok {
+			return
+		}
+		for importPath := range imports {
+			deps[importPath] = true
+			visit(importPath)
+		}
+	}
+
+	visit(pkgPath)
+	return deps
+}
+
 // Tester runs tests and merges coverage files
 type Tester struct {
 	setup   *shared.Setup
@@ -56,7 +83,7 @@ func (t *Tester) Test() error {
 	defer os.RemoveAll(t.cover)
 
 	for _, spec := range t.setup.Packages {
-		if err := t.processDir(spec.Dir); err != nil {
+		if err := t.processDir(spec.Dir, spec.Path); err != nil {
 			return err
 		}
 	}
@@ -183,7 +210,7 @@ func (t *Tester) ProcessExcludes(excludes map[string]map[int]bool) error {
 	return nil
 }
 
-func (t *Tester) processDir(dir string) error {
+func (t *Tester) processDir(dir string, pkgPath string) error {
 
 	coverfile := filepath.Join(
 		t.cover,
@@ -212,11 +239,26 @@ func (t *Tester) processDir(dir string) error {
 		t.setup.Env.Stderr(),
 	)
 
-	var args []string
+	// Filter packages to only include those that are dependencies of the current package
 	var pkgs []string
-	for _, s := range t.setup.Packages {
-		pkgs = append(pkgs, s.Path)
+	if t.setup.PackageImports != nil {
+		// Get transitive dependencies for the current package
+		deps := t.getTransitiveDeps(pkgPath)
+		deps[pkgPath] = true // include the package itself
+
+		for _, s := range t.setup.Packages {
+			if deps[s.Path] {
+				pkgs = append(pkgs, s.Path)
+			}
+		}
+	} else {
+		// Fallback: include all packages if dependency info is not available
+		for _, s := range t.setup.Packages {
+			pkgs = append(pkgs, s.Path)
+		}
 	}
+
+	var args []string
 	args = append(args, "test")
 	if t.setup.Short {
 		// notest
