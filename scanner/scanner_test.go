@@ -19,7 +19,7 @@ func TestSingle(t *testing.T) {
 	tests := map[string]string{
 		"single": `package a
 
-			func wrap(error) error
+			func wrap(err error) error { return err }
 			
 			func a() error {
 				var a bool

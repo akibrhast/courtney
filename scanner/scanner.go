@@ -98,6 +98,15 @@ func (c *CodeMap) LoadProgram() error {
 	if err != nil {
 		return errors.Wrap(err, "Error loading config")
 	}
+	var loadErrors []string
+	packages.Visit(pkgs, nil, func(pkg *packages.Package) {
+		for _, err := range pkg.Errors {
+			loadErrors = append(loadErrors, err.Error())
+		}
+	})
+	if len(loadErrors) != 0 {
+		return errors.Errorf("Error loading packages:\n%s", strings.Join(loadErrors, "\n"))
+	}
 	c.pkgs = pkgs
 
 	// Populate PackageImports with direct imports for each package
